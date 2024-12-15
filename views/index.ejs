@@ -190,5 +190,27 @@
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
       crossorigin="anonymous"
     ></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script>
+      $("#month").on("input",function(){
+        var month = parseInt($(this).val());
+
+        if(month<1||month>12){
+          $(this).get(0).setCustomValidity("Please enter a month between 1 and 12.");
+        }else{
+          $(this).get(0).setCustomValidity("");
+        }
+      })
+
+      $("#date").on("input",function(){
+        var date = parseInt($(this).val());
+
+        if(date<1||date>31){
+          $(this).get(0).setCustomValidity("Please enter a date between 1 and 31.");
+        }else{
+          $(this).get(0).setCustomValidity("");
+        }
+      })
+    </script>
   </body>
 </html>

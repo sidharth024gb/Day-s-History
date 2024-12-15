@@ -61,7 +61,7 @@ app.get("/get-events/:type", async (req, res) => {
     } else {
       filterEvents = events;
     }
-    
+
     const years = events.reduce((accumulator, event) => {
       accumulator.push(event.year);
       return accumulator;
@@ -74,6 +74,7 @@ app.get("/get-events/:type", async (req, res) => {
       month,
       date,
       filterYear,
+      error: filterEvents.length === 0 ? "No Events Found" : "",
     });
   } catch (error) {
     console.log(error);
