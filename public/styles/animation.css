@@ -1,0 +1,14 @@
+@keyframes toast {
+    0%{
+        right: -1000%;
+    }
+    20%{
+        right: 0%;
+    }
+    80%{
+        right: 0%;
+    }
+    100% {
+        right: -1000%;
+    }
+}

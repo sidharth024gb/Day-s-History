@@ -11,39 +11,73 @@ app.use(express.static("./public"));
 
 app.get("/", async (_, res) => {
   try {
-    const date = new Date();
-    const response = await axios(
-      `${API_URL}/${date.getMonth() + 1}/${date.getDate()}/events.json`
-    );
+    const today = new Date();
+    const month = today.getMonth() + 1;
+    const date = today.getDate();
+
+    const response = await axios(`${API_URL}/${month}/${date}/events.json`);
     const events = response.data.events;
+
+    if (!events)
+      return res.render("index.ejs", { error: "404 No Events for Tod  ay" });
+
     const years = events.reduce((accumulator, event) => {
       accumulator.push(event.year);
       return accumulator;
     }, []);
 
-    res.render("index.ejs", { events, years });
+    return res.render("index.ejs", {
+      events,
+      years: [...new Set(years)],
+      type: "events",
+      month,
+      date,
+      filterYear: "",
+    });
   } catch (error) {
     console.log(error);
-    res.render("index.ejs", { error: error.message });
+    return res.render("index.ejs", { error: error.message });
   }
 });
 
-app.post("/get-events/:type", async (req, res) => {
+app.get("/get-events/:type", async (req, res) => {
   try {
-    const { month, date } = req.body;
+    const { month, date, filterYear } = req.query;
     const { type } = req.params;
 
+    if (!month || !date || !type) {
+      return res.render("index.ejs", { error: "Missing Data" });
+    }
+
     const response = await axios(`${API_URL}/${month}/${date}/${type}.json`);
-    const events = response.data.events;
+    const events = response.data[type];
+    let filterEvents;
+
+    if (!events)
+      return res.render("index.ejs", { error: "404 No Events on that Day" });
+
+    if (filterYear) {
+      filterEvents = events.filter((event) => event.year === filterYear);
+    } else {
+      filterEvents = events;
+    }
+    
     const years = events.reduce((accumulator, event) => {
       accumulator.push(event.year);
       return accumulator;
     }, []);
 
-    res.render("index.ejs", { events, years });
+    return res.render("index.ejs", {
+      events: filterEvents,
+      years: [...new Set(years)],
+      type,
+      month,
+      date,
+      filterYear,
+    });
   } catch (error) {
     console.log(error);
-    res.render("index.ejs", { error: error.message });
+    return res.render("index.ejs", { error: error.message });
   }
 });
 
